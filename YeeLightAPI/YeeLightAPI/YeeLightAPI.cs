@@ -189,6 +189,35 @@ namespace YeeLightAPI
         }
 
         /// <summary>
+        /// Sets the light device to white mode with the given temperature
+        /// </summary>
+        /// <param name="temperature"> The integer value of temperature to set the light device's color temperature</param>
+        /// <param name="duration"> Duration of the effect, minimum value for this argument is Constants.MinValueForDurationParameter and so is the default value</param>
+        /// <param name="effectType"> Type of the effect, can be anything from Constants.EffectParamValues and default value is Constants.EffectParamValues.SUDDEN</param>
+        /// <remarks>
+        /// Throws if duration argument is out of range or if device is not connected
+        /// </remarks>
+        public bool SetTemperature(
+            int temperature,
+            int duration = Constants.MinValueForDurationParameter,
+            Constants.EffectParamValues effectType = Constants.EffectParamValues.SUDDEN
+            )
+        {
+            ThrowExceptionIfIntArgIsOutOfRange("temperature", temperature, Constants.MinValueForTemperatureParameter, Constants.MaxValueForTemperatureParameter);
+            ThrowExceptionIfNotConnected();
+            var result = SendCommandMessage(
+                    1,
+                    "set_ct_abx",
+                    new string[] {
+                        temperature.ToString(),
+                        Utils.GetJsonStringFromParamEnum(effectType),
+                        duration.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                    }
+            );
+            return result;
+        }
+
+        /// <summary>
         /// Closes the normal connection to the light 
         /// and tells light to make a music mode connection to the local device according to the arguments provided.
         /// The music mode connections have no command rate limit.
